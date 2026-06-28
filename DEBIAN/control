@@ -1,0 +1,10 @@
+Package: com.seraph.fortnitecheat
+Name: Fortnite Aimbot + GUI
+Version: 1.0-1
+Architecture: iphoneos-arm64
+Description: Fortnite iOS cheat with aimbot (nearest player) and in-game GUI
+Maintainer: seraph <seraph@x.ai>
+Author: seraph
+Section: Games
+Depends: mobilesubstrate (>= 0.9.5000)
+Priority: optional

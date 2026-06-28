@@ -1,0 +1,26 @@
+name: Build Fortnite Aimbot + GUI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Theos
+        run: |
+          sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/theos/theos/master/bin/install-theos)"
+      
+      - name: Build
+        working-directory: ./fortnite-cheat
+        run: make package
+      
+      - name: Upload DEB
+        uses: actions/upload-artifact@v4
+        with:
+          name: Fortnite-Aimbot-GUI
+          path: fortnite-cheat/packages/*.deb
