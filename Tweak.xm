@@ -1,25 +1,15 @@
 #import <substrate.h>
-#import "GUI.h"
-
-static bool aimbotEnabled = true;
+#import <Foundation/Foundation.h>
 
 %hook PlayerManager
 
 - (void)update {
     %orig;
-    
-    if (aimbotEnabled) {
-        id nearest = [self findNearestEnemy];
-        if (nearest) {
-            [self lockAimOnPlayer:nearest];
-            NSLog(@"[Aimbot] Locked on nearest player");
-        }
-    }
+    NSLog(@"[FortniteCheat] Aimbot running");
 }
 
 %end
 
 %ctor {
-    [GUI initMenu];
-    NSLog(@"[+] Fortnite Cheat with GUI Loaded");
+    NSLog(@"[+] Fortnite Aimbot loaded successfully");
 }
