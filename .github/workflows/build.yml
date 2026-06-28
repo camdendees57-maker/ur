@@ -14,7 +14,7 @@ jobs:
         run: |
           export THEOS=/Users/runner/theos
           mkdir -p $THEOS
-          bash -c "$(curl -fsSL https://raw.githubusercontent.com/theos/theos/master/bin/install-theos)"
+          bash -c "$(curl -fsSL https://raw.githubusercontent.com/theos/theos/master/bin/install-theos)" -- --no-sdk
       
       - name: Build
         run: |
