@@ -1,9 +1,8 @@
-name: Build Fortnite Aimbot + GUI
+name: Build Fortnite Aimbot Toggle GUI
 
 on:
   push:
     branches: [ main ]
-  pull_request:
 
 jobs:
   build:
@@ -13,14 +12,18 @@ jobs:
       
       - name: Setup Theos
         run: |
-          sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/theos/theos/master/bin/install-theos)"
+          export THEOS=/Users/runner/theos
+          mkdir -p $THEOS
+          bash -c "$(curl -fsSL https://raw.githubusercontent.com/theos/theos/master/bin/install-theos)"
       
       - name: Build
-        working-directory: ./fortnite-cheat
-        run: make package
+        run: |
+          export THEOS=/Users/runner/theos
+          export THEOS_MAKE_PATH=$THEOS/makefiles
+          make package
       
       - name: Upload DEB
         uses: actions/upload-artifact@v4
         with:
-          name: Fortnite-Aimbot-GUI
-          path: fortnite-cheat/packages/*.deb
+          name: Fortnite-Aimbot-Toggle-GUI
+          path: packages/*.deb
