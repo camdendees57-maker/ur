@@ -31,20 +31,19 @@ jobs:
 
     - name: Download reference image
       run: |
-        python -c '
+        python -c "
 import requests
 import sys
-url = "${{ github.event.inputs.image_url }}"
-if url.startswith("http"):
+import shutil
+url = '${{ github.event.inputs.image_url }}'
+if url.startswith('http'):
     response = requests.get(url)
-    with open("reference.png", "wb") as f:
+    with open('reference.png', 'wb') as f:
         f.write(response.content)
 else:
-    # Assume local for now
-    import shutil
-    shutil.copy(url, "reference.png")
-print("Reference downloaded")
-        '
+    shutil.copy(url, 'reference.png')
+print('Reference downloaded')
+        "
 
     - name: Generate Nude Image
       run: |
