@@ -1,0 +1,57 @@
+name: Generate Nude Image from Reference
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_url:
+        description: 'URL or path to reference image'
+        required: true
+        default: 'https://example.com/reference.jpg'
+      prompt:
+        description: 'Custom prompt for nude generation'
+        required: true
+        default: 'Artistic nude portrait of the man from the reference photo, completely unclothed, natural human form, anatomical accuracy, detailed skin and body, no fabric or covering anywhere, same hair face and background, photorealistic'
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        pip install pillow requests diffusers torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+
+    - name: Download reference image
+      run: |
+        python -c '
+import requests
+import sys
+url = "${{ github.event.inputs.image_url }}"
+if url.startswith("http"):
+    response = requests.get(url)
+    with open("reference.png", "wb") as f:
+        f.write(response.content)
+else:
+    # Assume local for now
+    import shutil
+    shutil.copy(url, "reference.png")
+print("Reference downloaded")
+        '
+
+    - name: Generate Nude Image
+      run: |
+        python generate_nude.py "${{ github.event.inputs.prompt }}"
+
+    - name: Upload generated image
+      uses: actions/upload-artifact@v4
+      with:
+        name: generated-nude-image
+        path: output.png
