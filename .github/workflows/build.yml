@@ -1,23 +1,16 @@
-name: Generate Nude Image from Reference
+name: Build Windows IPA Sideloader EXE
 
 on:
   workflow_dispatch:
-    inputs:
-      image_url:
-        description: 'URL or path to reference image'
-        required: true
-        default: 'https://example.com/reference.jpg'
-      prompt:
-        description: 'Custom prompt for nude generation'
-        required: true
-        default: 'Artistic nude portrait of the man from the reference photo, completely unclothed, natural human form, anatomical accuracy, detailed skin and body, no fabric or covering anywhere, same hair face and background, photorealistic'
+  push:
+    branches: [ main, master ]
 
 jobs:
-  generate:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: windows-latest
 
     steps:
-    - name: Checkout repo
+    - name: Checkout
       uses: actions/checkout@v4
 
     - name: Setup Python
@@ -27,33 +20,27 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install pillow requests diffusers torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+        python -m pip install --upgrade pip
+        pip install pyinstaller tkinter pillow pyusb wmi pymobiledevice3
 
-    - name: Download reference image
+    - name: Build EXE with PyInstaller
       run: |
-        cat > download.py << 'EOF'
-import requests
-import sys
-import shutil
-url = '${{ github.event.inputs.image_url }}'
-if url and url.startswith('http'):
-    response = requests.get(url)
-    with open('reference.png', 'wb') as f:
-        f.write(response.content)
-elif url:
-    shutil.copy(url, 'reference.png')
-else:
-    print("No URL provided")
-print("Reference downloaded")
-EOF
-        python download.py
+        pyinstaller --onefile --windowed --name "iOS-IPA-Sideloader" --icon=icon.ico --add-data "yg.py;." sideloader.py
 
-    - name: Generate Nude Image
-      run: |
-        python generate_nude.py "${{ github.event.inputs.prompt }}"
-
-    - name: Upload generated image
+    - name: Upload EXE artifact
       uses: actions/upload-artifact@v4
       with:
-        name: generated-nude-image
-        path: output.png
+        name: iOS-IPA-Sideloader-Windows
+        path: dist/iOS-IPA-Sideloader.exe
+
+    - name: Create Release (on push to main)
+      if: github.event_name == 'push'
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: v${{ github.run_number }}
+        name: iOS IPA Sideloader v${{ github.run_number }}
+        files: dist/iOS-IPA-Sideloader.exe
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
