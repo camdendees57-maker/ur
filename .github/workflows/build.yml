@@ -11,11 +11,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout with submodules
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           submodules: recursive
           fetch-depth: 0
+
+      - name: Force init submodules
+        run: |
+          git submodule update --init --recursive
+          ls -la BNM imgui || echo "Submodules still missing!"
 
       - name: Setup Android NDK
         uses: nttld/setup-ndk@v1
@@ -45,6 +50,3 @@ jobs:
           name: BNM_Spawner-arm64-v8a
           path: build/libBNM_Spawner.so
           retention-days: 30
-
-      - name: Show output
-        run: ls -lh build/libBNM_Spawner.so
