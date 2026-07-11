@@ -11,10 +11,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout with submodules
         uses: actions/checkout@v4
         with:
-          submodules: recursive          # ← pulls BNM + imgui automatically
+          submodules: recursive
+          fetch-depth: 0
 
       - name: Setup Android NDK
         uses: nttld/setup-ndk@v1
